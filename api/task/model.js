@@ -10,13 +10,15 @@ module.exports = {
 
 function Find (task_id) {
 return db('tasks')
-    .where({task_id})
+    .where({task_id}).first()
 }
 
 
 function findAll() {
     return db('tasks')
-    }
+      .select("tasks.*", "projects.project_name", "projects.project_description")
+      .leftJoin("projects", "tasks.project_id", "projects.project_id");
+  }
 
 
 function add (task) {

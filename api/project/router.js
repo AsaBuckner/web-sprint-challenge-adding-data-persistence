@@ -11,9 +11,17 @@ const router = express.Router()
 //   - Example of response body: `{"project_id":1,"project_name":"bar","project_description":null,"project_completed":false}`
 
 router.post("/", (req, res, next)=>{
+    
+    if(!req.body.project_completed){
+        req.body.project_completed = 0
+    }
     Project.add(req.body)
     .then(project =>{
-        res.status(200).json(project)
+        const mapProject = { ...project, project_completed: project.project_completed ? true : false }
+        res.status(200).json(mapProject)
+    })
+    .catch(err =>{
+        res.status(500).json({message: `somethings up: ${err}`})
     })
 });
 
@@ -23,16 +31,14 @@ router.post("/", (req, res, next)=>{
 
 
 router.get("/", (req, res, next)=>{
+
     Project.findAll()
-    .then(project =>{
-        project = project.map(project => {
-            if (project.project_completed === 0) {
-               return {...project, project_completed : false};
-            } else {
-                return {...project, project_completed : true};;
-            }
-        });
-        res.status(200).json(project)
+    .then(projects =>{
+      const mappedProjects = projects.map(project => ({ ...project, project_completed: project.project_completed ? true : false }))
+      res.status(200).json(mappedProjects)
+    })
+    .catch(err =>{
+        res.status(500).json({message: `somethings up: ${err}`})
     })
 });
 
@@ -40,14 +46,11 @@ router.get("/", (req, res, next)=>{
 router.get("/:id", (req, res, next)=>{
     Project.Find(req.params.id)
     .then(project =>{
-        project = project.map(project => {
-            if (project.project_completed === 0) {
-               return {...project, project_completed : false};
-            } else {
-                return {...project, project_completed : true};;
-            }
-        })
-        res.status(200).json(project)
+        const mapProject= { ...project, project_completed: project.project_completed ? true : false }
+        res.status(200).json(mapProject)
+    })
+    .catch(err =>{
+        res.status(500).json({ message: `somethings up: ${err}` })
     })
 });
 

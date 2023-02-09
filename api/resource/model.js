@@ -10,7 +10,7 @@ module.exports = {
 
 function Find (resource_id) {
 return db('resources')
-    .where({resource_id})
+    .where({resource_id}).first()
 }
 
 
